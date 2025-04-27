@@ -1,0 +1,1 @@
+export const path = 'F:/Games/.minecraft/saves/magic nether portal/datapacks'

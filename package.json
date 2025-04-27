@@ -1,0 +1,23 @@
+{
+  "name": "sandstone-template",
+  "version": "0.0.1",
+  "description": "A pack created with Sandstone",
+  "scripts": {
+    "watch": "sand watch",
+    "build": "sand build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "sandstone": "^0.13.6"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.0",
+    "sandstone-cli": "^0.5.4",
+    "typescript": "^4.9.5"
+  },
+  "engines": {
+    "node": ">=12.9.0"
+  }
+}

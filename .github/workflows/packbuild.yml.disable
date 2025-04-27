@@ -1,0 +1,36 @@
+name: Build Sandstone pack
+
+on:
+  push
+
+jobs:
+  build_pack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source Git branch
+        uses: actions/checkout@v2
+        with:
+            ref: ${{ github.ref }}
+            fetch-depth: 0
+
+      - name: Build Pack from TS
+        run: |
+          npm i
+          npm run build
+      - name: Add & Commit changes
+        run: |
+          git worktree add gen generated
+          rm -rf gen/*
+          mv ./.sandstone/output/* gen
+          cd gen
+          git config --local user.email 'action@github.com'
+          git config --local user.name 'GitHub Action'
+          git add -A ./datapack
+          git diff-index --quiet HEAD || git commit -m 'Updated Pack files'
+      - name: Push Changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          directory: gen
+          branch: generated

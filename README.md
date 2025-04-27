@@ -20,3 +20,10 @@ yarn watch
 // or
 sand watch
 ```
+
+## Path install
+
+Add an `outputpath.ts` file to the project root with the contents
+```ts
+export const path = '<path>'
+```

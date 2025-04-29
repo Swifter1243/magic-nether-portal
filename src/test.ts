@@ -1,4 +1,4 @@
-import { _, abs, clone, MCFunction, Objective, setblock } from "sandstone";
+import { _, abs, clone, MCFunction, Objective, setblock, tellraw } from "sandstone";
 import { playerInPortalXY, playerInPortalZ, playerIsNorthCurrent, portalCenterRaw, portalFrustumMatrix } from "./data";
 import { Vec3Tuple, Vector4 } from "./vector";
 import { multiplyPoint } from "./matrix";
@@ -10,7 +10,7 @@ const testPos = Vector4.fromObjective(testObjective, 'pos')
 const testResultPos = Vector4.fromObjective(testObjective, 'resultPos')
 const testResultSuccess = Boolean.from(testObjective('resultBoolean'))
 
-export function doBlockTests() {
+export const doBlockTests = MCFunction('do_block_tests', () => {
     _.if(playerInPortalZ.value, () => {
         _.if(playerInPortalXY.value, () => {
             onTestPointOnOppositeHalf()
@@ -20,12 +20,12 @@ export function doBlockTests() {
     }).else(() => {
         onTestPointIsInFrustum()
     })
-}
+})
 
-function onTestNever() {
+const onTestNever = MCFunction('tests/never', () => {
     testResultSuccess["="](false)
     testPoints()
-}
+})
 
 const testPointOnOppositeHalf = MCFunction('test_point_on_opposite_half', () => {
     _.if(playerIsNorthCurrent.value, () => {
@@ -65,9 +65,9 @@ const testPointIsInFrustum = MCFunction('test_point_is_in_frustum', () => {
     _.if(testResultPos.y[">"](0.5), fail) // too far down
 })
 
-function onTestPointIsInFrustum() {
+const onTestPointIsInFrustum = MCFunction('tests/point_is_in_frustum', () => {
     testPoints(() => testPointIsInFrustum())
-}
+})
 
 function testPoints(test?: () => void) {
     for (let x = -5; x <= 4; x++) {

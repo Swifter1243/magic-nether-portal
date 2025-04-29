@@ -15,10 +15,11 @@ Portal is at `0,0,0`
 
 > [!IMPORTANT]  
 > Create an `outputpath.ts` file in the root project which exports the path to the desired datapack output.
-```
+```ts
 export const path = 'F:/Games/.minecraft/saves/magic nether portal/datapacks'
 ```
 
+***
 
 To build the datapack, run:
 ```ts

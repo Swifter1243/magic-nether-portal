@@ -56,7 +56,7 @@ const updatePlayerHead = MCFunction('update_player_head', () => {
     playerHead.y.setFromNBT(playerPosData.select([1]))
     playerHead.z.setFromNBT(playerPosData.select([2]))
 
-    playerHead.y.addEquals(1.6)
+    playerHead.y['+='](1.6)
 })
 
 const testObjective = Objective.create('frustum_test')

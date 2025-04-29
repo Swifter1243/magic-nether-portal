@@ -1,5 +1,5 @@
 import { _, abs, MCFunction, Objective, setblock } from "sandstone";
-import { playerInPortalBounds, playerInPortalZ, playerIsNorthCurrent, portalCenterRaw, portalFrustumMatrix } from "./data";
+import { playerInPortalXY, playerInPortalZ, playerIsNorthCurrent, portalCenterRaw, portalFrustumMatrix } from "./data";
 import { Vector4 } from "./vector";
 import { multiplyPoint } from "./matrix";
 import { Boolean } from "./boolean";
@@ -11,7 +11,7 @@ const testResultSuccess = Boolean.from(testObjective('resultBoolean'))
 
 export function doBlockTests() {
     _.if(playerInPortalZ.value, () => {
-        _.if(playerInPortalBounds.value, () => {
+        _.if(playerInPortalXY.value, () => {
             onTestPointOnOppositeHalf()
         }).else(() => {
             onTestNever()

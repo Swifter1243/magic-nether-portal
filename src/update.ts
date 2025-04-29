@@ -1,9 +1,9 @@
 import { _, abs, data, Data, execute, kill, MCFunction, Objective, particle, rel, scoreboard, Selector, setblock, summon, tellraw, title } from "sandstone";
 import { playerHead, portalCenter, portalCenterRaw, portalFrustumMatrix, portalSizeX, portalSizeY } from "./data";
-import { FixedPointNumber, MINUS_ONE, ONE } from "./number";
 import { Vector4 } from "./vector";
 import { Matrix4x4, multiplyPoint } from "./matrix";
 import { Boolean } from "./boolean";
+import { FixedPointNumber } from "./number";
 
 MCFunction('update', () => {
     updatePlayerHead()
@@ -21,25 +21,25 @@ MCFunction('update', () => {
 })
 
 const updatePortalFrustum = MCFunction('update_portal_frustum', () => {
-    const invPlayerZDist = ONE["/"](portalCenter.z["-"](playerHead.z))
+    const invPlayerZDist = FixedPointNumber.from(1)["/"](portalCenter.z["-"](playerHead.z))
 
-    const antiSkewX = MINUS_ONE["*"](portalCenter.x["-"](playerHead.x))["*"](invPlayerZDist)
-    const antiSkewY = MINUS_ONE["*"](portalCenter.y["-"](playerHead.y))["*"](invPlayerZDist)
+    const antiSkewX = FixedPointNumber.from(-1)["*"](portalCenter.x["-"](playerHead.x))["*"](invPlayerZDist)
+    const antiSkewY = FixedPointNumber.from(-1)["*"](portalCenter.y["-"](playerHead.y))["*"](invPlayerZDist)
 
-    const invSizeX = ONE["/"](portalSizeX)
-    const invSizeY = ONE["/"](portalSizeY)
+    const invSizeX = FixedPointNumber.from(1)["/"](portalSizeX)
+    const invSizeY = FixedPointNumber.from(1)["/"](portalSizeY)
 
     const sAx = invSizeX["*"](antiSkewX)
     const sAy = invSizeY["*"](antiSkewY)
-    const oPz = MINUS_ONE["*"](invPlayerZDist)["*"](playerHead.z)
+    const oPz = FixedPointNumber.from(-1)["*"](invPlayerZDist)["*"](playerHead.z)
 
     portalFrustumMatrix.m00["="](invSizeX)
     portalFrustumMatrix.m02["="](sAx)
-    portalFrustumMatrix.m03["="](MINUS_ONE["*"](sAx)["*"](playerHead.z)["-"](invSizeX["*"](playerHead.x)))
+    portalFrustumMatrix.m03["="](FixedPointNumber.from(-1)["*"](sAx)["*"](playerHead.z)["-"](invSizeX["*"](playerHead.x)))
 
     portalFrustumMatrix.m11["="](invSizeY)
     portalFrustumMatrix.m12["="](sAy)
-    portalFrustumMatrix.m13["="](MINUS_ONE["*"](sAy)["*"](playerHead.z)["-"](invSizeY["*"](playerHead.y)))
+    portalFrustumMatrix.m13["="](FixedPointNumber.from(-1)["*"](sAy)["*"](playerHead.z)["-"](invSizeY["*"](playerHead.y)))
 
     portalFrustumMatrix.m22["="](invPlayerZDist)
     portalFrustumMatrix.m23["="](oPz["-"](1))

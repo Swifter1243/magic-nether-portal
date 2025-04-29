@@ -1,4 +1,4 @@
-import { Objective, Score } from "sandstone";
+import { MCFunction, Objective, Score } from "sandstone";
 import { StoreType } from "sandstone/commands/implementations";
 import { DataPointInstance } from "sandstone/variables/Data";
 import { getNextVariable } from "./variable";
@@ -129,6 +129,3 @@ export class FixedPointNumber {
         return this.score.greaterThan(other * SCALE)
     }
 }
-
-export const MINUS_ONE = FixedPointNumber.from(-1)
-export const ONE = FixedPointNumber.from(1)

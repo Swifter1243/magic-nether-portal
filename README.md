@@ -19,7 +19,7 @@ yarn build
 sand build
 ```
 
-> [!IMPORTANT]  
+> [!CAUTION]  
 > Sandstone is currently broken on 1.21+ because of the datapack namespace changes (e.g. `functions` -> `function`) so you'll need to backport the world if you want to build this yourself.
 
 > [!IMPORTANT]  

@@ -40,7 +40,7 @@ export const checkPlayerPortalData = MCFunction('check_player_portal_data', () =
     })
 
     _.if(_.and(
-        playerInPortalZ.score,
+        playerInPortalZ.value,
         playerHead.x.greaterThan(portalCenterRaw[0] - portalSizeRaw[0] * 0.5),
         playerHead.x.lessThan(portalCenterRaw[0] + portalSizeRaw[0] * 0.5),
         playerHead.y.greaterThan(portalCenterRaw[1] - portalSizeRaw[1] * 0.5),

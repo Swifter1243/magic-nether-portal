@@ -1,5 +1,5 @@
 import { _, abs, data, Data, execute, kill, MCFunction, Objective, particle, rel, scoreboard, Selector, setblock, summon, tellraw, title } from "sandstone";
-import { checkPlayerPortalData, playerHead, playerIsNorthCurrent, playerIsNorthLast, portalCenter, portalCenterRaw, portalFrustumMatrix, portalSizeX, portalSizeY } from "./data";
+import { checkPlayerPortalData, playerHead, playerInPortalBounds, playerInPortalZ, playerIsNorthCurrent, playerIsNorthLast, portalCenter, portalCenterRaw, portalFrustumMatrix, portalSizeX, portalSizeY } from "./data";
 import { Vector4 } from "./vector";
 import { Matrix4x4, multiplyPoint } from "./matrix";
 import { Boolean } from "./boolean";
@@ -9,17 +9,69 @@ MCFunction('update', () => {
     updatePlayerHead()
     updatePortalFrustum()
     updatePlayerPortalSide()
-
-    for (let x = -15; x <= 15; x++) {
-        for (let y = -10; y <= 10; y++) {
-            for (let z = 0; z <= 0; z++) {
-                testPoint(portalCenterRaw[0] + x, portalCenterRaw[1] + y, portalCenterRaw[2] + z + 3)
-            }
-        }
-    }
+    doBlockTests()
 }, {
     runEachTick: true
 })
+
+function doBlockTests() {
+    _.if(playerInPortalZ.score, () => {
+        _.if(playerInPortalBounds.score, () => {
+            onTestPointOnOppositeHalf()
+        }).else(() => {
+            onTestNever()
+        })
+    }).else(() => {
+        onTestPointIsInFrustum()
+    })
+}
+
+function onTestNever() {
+    testResultSuccess["="](false)
+    testPoints()
+}
+
+const testPointOnOppositeHalf = MCFunction('test_point_on_opposite_half', () => {
+    _.if(playerIsNorthCurrent.value, () => {
+        _.if(testPos.z[">"](portalCenterRaw[2]), () => {
+            testResultSuccess["="](true)
+        }).else(() => {
+            testResultSuccess["="](false)
+        })
+    }).else(() => {
+        _.if(testPos.z["<"](portalCenterRaw[2]), () => {
+            testResultSuccess["="](true)
+        }).else(() => {
+            testResultSuccess["="](false)
+        })
+    })
+})
+
+function onTestPointOnOppositeHalf() {
+    testPoints(() => testPointOnOppositeHalf())
+}
+
+const testPointIsInFrustum = MCFunction('test_point_is_in_frustum', () => {
+    testPos.w["="](1)
+    multiplyPoint(testPos, portalFrustumMatrix, testResultPos)
+
+    testResultPos.x["/="](testResultPos.w)
+    testResultPos.y["/="](testResultPos.w)
+
+    testResultSuccess["="](true)
+
+    const fail = () => testResultSuccess["="](false)
+
+    _.if(testResultPos.z["<"](0), fail) // behind frame
+    _.if(testResultPos.x["<"](-0.5), fail) // too far left
+    _.if(testResultPos.x[">"](0.5), fail) // too far right
+    _.if(testResultPos.y["<"](-0.5), fail) // too far up
+    _.if(testResultPos.y[">"](0.5), fail) // too far down
+})
+
+function onTestPointIsInFrustum() {
+    testPoints(() => testPointIsInFrustum())
+}
 
 const updatePlayerPortalSide = MCFunction('update_player_portal_side', () => {
     checkPlayerPortalData()
@@ -75,7 +127,17 @@ const testPos = Vector4.fromObjective(testObjective, 'pos')
 const testResultPos = Vector4.fromObjective(testObjective, 'resultPos')
 const testResultSuccess = Boolean.from(testObjective('resultBoolean'))
 
-function testPoint(x: number, y: number, z: number) {
+function testPoints(test?: () => void) {
+    for (let x = -15; x <= 15; x++) {
+        for (let y = -10; y <= 10; y++) {
+            for (let z = 0; z <= 0; z++) {
+                testPoint(portalCenterRaw[0] + x, portalCenterRaw[1] + y, portalCenterRaw[2] + z + 3, test)
+            }
+        }
+    }
+}
+
+function testPoint(x: number, y: number, z: number, test?: () => void) {
     x = Math.round(x) + 0.5
     y = Math.round(y) + 0.5
     z = Math.round(z) + 0.5
@@ -84,7 +146,8 @@ function testPoint(x: number, y: number, z: number) {
     testPos.y["="](y)
     testPos.z["="](z)
 
-    testPointFunction()
+    if (test)
+        test()
 
     const p = abs(Math.floor(x), Math.floor(y), Math.floor(z))
 
@@ -94,21 +157,3 @@ function testPoint(x: number, y: number, z: number) {
         setblock(p, 'minecraft:air')
     })
 }
-
-const testPointFunction = MCFunction('test_point_is_in_frustum', () => {
-    testPos.w["="](1)
-    multiplyPoint(testPos, portalFrustumMatrix, testResultPos)
-
-    testResultPos.x["/="](testResultPos.w)
-    testResultPos.y["/="](testResultPos.w)
-
-    testResultSuccess["="](true)
-
-    const fail = () => testResultSuccess["="](false)
-
-    _.if(testResultPos.z["<"](0), fail) // behind frame
-    _.if(testResultPos.x["<"](-0.5), fail) // too far left
-    _.if(testResultPos.x[">"](0.5), fail) // too far right
-    _.if(testResultPos.y["<"](-0.5), fail) // too far up
-    _.if(testResultPos.y[">"](0.5), fail) // too far down
-})

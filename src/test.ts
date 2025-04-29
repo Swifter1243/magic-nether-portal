@@ -71,11 +71,11 @@ function onTestPointIsInFrustum() {
 
 function testPoints(test?: () => void) {
     for (let x = -5; x <= 4; x++) {
-        testPos.x["="](x)
+        testPos.x["="](Math.floor(x) + 0.5)
         for (let y = -2; y <= -2; y++) {
-            testPos.y["="](y)
+            testPos.y["="](Math.floor(y) + 0.5)
             for (let z = -3; z <= 3; z++) {
-                testPos.z["="](z)
+                testPos.z["="](Math.floor(z) + 0.5)
                 testPoint(x, y, z, test)
             }
         }
@@ -83,10 +83,6 @@ function testPoints(test?: () => void) {
 }
 
 function testPoint(x: number, y: number, z: number, test?: () => void) {
-    x = Math.floor(x) + 0.5
-    y = Math.floor(y) + 0.5
-    z = Math.floor(z) + 0.5
-
     if (test)
         test()
 

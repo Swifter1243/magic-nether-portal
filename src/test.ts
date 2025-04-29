@@ -1,8 +1,9 @@
-import { _, abs, MCFunction, Objective, setblock } from "sandstone";
+import { _, abs, clone, MCFunction, Objective, setblock } from "sandstone";
 import { playerInPortalXY, playerInPortalZ, playerIsNorthCurrent, portalCenterRaw, portalFrustumMatrix } from "./data";
-import { Vector4 } from "./vector";
+import { Vec3Tuple, Vector4 } from "./vector";
 import { multiplyPoint } from "./matrix";
 import { Boolean } from "./boolean";
+import { netherRelativeX, overworldRelativeX } from "./structure";
 
 const testObjective = Objective.create('frustum_test')
 const testPos = Vector4.fromObjective(testObjective, 'pos')
@@ -69,19 +70,19 @@ function onTestPointIsInFrustum() {
 }
 
 function testPoints(test?: () => void) {
-    for (let x = -15; x <= 15; x++) {
-        for (let y = -10; y <= 10; y++) {
-            for (let z = 0; z <= 0; z++) {
-                testPoint(portalCenterRaw[0] + x, portalCenterRaw[1] + y, portalCenterRaw[2] + z + 3, test)
+    for (let x = -5; x <= 4; x++) {
+        for (let y = -2; y <= -2; y++) {
+            for (let z = -3; z <= 3; z++) {
+                testPoint(x, y, z, test)
             }
         }
     }
 }
 
 function testPoint(x: number, y: number, z: number, test?: () => void) {
-    x = Math.round(x) + 0.5
-    y = Math.round(y) + 0.5
-    z = Math.round(z) + 0.5
+    x = Math.floor(x) + 0.5
+    y = Math.floor(y) + 0.5
+    z = Math.floor(z) + 0.5
 
     testPos.x["="](x)
     testPos.y["="](y)
@@ -90,11 +91,14 @@ function testPoint(x: number, y: number, z: number, test?: () => void) {
     if (test)
         test()
 
-    const p = abs(Math.floor(x), Math.floor(y), Math.floor(z))
+    const p = [Math.floor(x), Math.floor(y), Math.floor(z)] as Vec3Tuple
+    const overworldSrc = abs(p[0] + overworldRelativeX, p[1], p[2])
+    const netherSrc = abs(p[0] + netherRelativeX, p[1], p[2])
+    const dstPoint = abs(...p)
 
     _.if(testResultSuccess.value, () => {
-        setblock(p, 'minecraft:netherrack')
+        clone(netherSrc, netherSrc, dstPoint)
     }).else(() => {
-        setblock(p, 'minecraft:air')
+        clone(overworldSrc, overworldSrc, dstPoint)
     })
 }

@@ -1,14 +1,13 @@
 import { _, abs, clone, MCFunction, tellraw } from "sandstone"
 import { playerInNether } from "./data"
+import { Vec3Tuple } from "./vector"
 
 const structureSize = [32, 32, 32]
 
-type Vec3Tuple = [number, number, number]
-
-const overworldRelativeX = 1000
+export const overworldRelativeX = 1000
 const overworldInputOrigin: Vec3Tuple = [984, 47, -15]
 const overworldOutputOrigin: Vec3Tuple = [984, -2, -15]
-const netherRelativeX = -1000
+export const netherRelativeX = -1000
 const netherInputOrigin: Vec3Tuple = [-1016, 44, -15]
 const netherOutputOrigin: Vec3Tuple = [-1016, -2, -15]
 

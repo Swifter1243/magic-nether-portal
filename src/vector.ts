@@ -1,6 +1,8 @@
 import { ObjectiveInstance, Score } from "sandstone";
 import { FixedPointNumber } from "./number";
 
+export type Vec3Tuple = [number, number, number]
+
 export class Vector4 {
     x: FixedPointNumber
     y: FixedPointNumber

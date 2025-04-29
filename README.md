@@ -1,7 +1,8 @@
-# Sandstone pack template
+source for this thing
 
-[//]: # "If .disable is removed from .github/workflows/packbuild.yml.disable & the repo is published to GitHub."
-Generated pack is in `generated` branch.
+https://x.com/Swifter1243/status/1917094003725475844
+
+# Building 
 
 To build the datapack, run:
 ```ts
@@ -10,20 +11,4 @@ npm run build
 yarn build
 // or
 sand build
-```
-
-To automatically rebuild the datapack on each change, run:
-```ts
-npm run watch
-// or
-yarn watch
-// or
-sand watch
-```
-
-## Path install
-
-Add an `outputpath.ts` file to the project root with the contents
-```ts
-export const path = '<path>'
 ```

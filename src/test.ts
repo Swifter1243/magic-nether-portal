@@ -70,11 +70,14 @@ const onTestPointIsInFrustum = MCFunction('tests/point_is_in_frustum', () => {
 })
 
 function testPoints(test?: () => void) {
-    for (let x = -5; x <= 4; x++) {
+    const minCorner = [-10, -2, -10]
+    const maxCorner = [10, 5, 10]
+
+    for (let x = minCorner[0]; x <= maxCorner[0]; x++) {
         testPos.x["="](Math.floor(x) + 0.5)
-        for (let y = -2; y <= -2; y++) {
+        for (let y = minCorner[1]; y <= maxCorner[1]; y++) {
             testPos.y["="](Math.floor(y) + 0.5)
-            for (let z = -3; z <= 3; z++) {
+            for (let z = minCorner[2]; z <= maxCorner[2]; z++) {
                 testPos.z["="](Math.floor(z) + 0.5)
                 testPoint(x, y, z, test)
             }
@@ -92,8 +95,8 @@ function testPoint(x: number, y: number, z: number, test?: () => void) {
     const dstPoint = abs(...p)
 
     _.if(testResultSuccess.value, () => {
-        clone(netherSrc, netherSrc, dstPoint)
+        clone(netherSrc, netherSrc, dstPoint).replace('force')
     }).else(() => {
-        clone(overworldSrc, overworldSrc, dstPoint)
+        clone(overworldSrc, overworldSrc, dstPoint).replace('force')
     })
 }

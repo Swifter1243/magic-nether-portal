@@ -3,6 +3,7 @@ import { Vector4 } from './vector'
 import { FixedPointNumber } from './number'
 import { Matrix4x4 } from './matrix'
 import { Boolean } from './boolean'
+import { updateStructureAreas } from './structure'
 
 export const portalCenterRaw = [0, 0.5, 0.5]
 export const portalSizeRaw = [3, 4]
@@ -76,6 +77,7 @@ MCFunction('init_portal_data', () => {
     portalFrustumMatrix.m31['='](0)
 
     playerInNether['='](false)
+    updateStructureAreas()
 
     checkPlayerPortalData()
     playerIsNorthLast['='](playerIsNorthCurrent)

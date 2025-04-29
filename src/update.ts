@@ -1,9 +1,7 @@
-import { _, abs, data, Data, execute, kill, MCFunction, Objective, particle, rel, scoreboard, Selector, setblock, summon, tellraw, title } from "sandstone";
-import { checkPlayerPortalData, playerHead, playerInPortalBounds, playerInPortalZ, playerIsNorthCurrent, playerIsNorthLast, portalCenter, portalCenterRaw, portalFrustumMatrix, portalSizeX, portalSizeY } from "./data";
-import { Vector4 } from "./vector";
-import { Matrix4x4, multiplyPoint } from "./matrix";
-import { Boolean } from "./boolean";
-import { FixedPointNumber } from "./number";
+import { _, Data, MCFunction, tellraw } from "sandstone"
+import { doBlockTests } from "./test"
+import { FixedPointNumber } from "./number"
+import { checkPlayerPortalData, playerHead, playerIsNorthCurrent, playerIsNorthLast, portalCenter, portalFrustumMatrix, portalSizeX, portalSizeY } from "./data"
 
 MCFunction('update', () => {
     updatePlayerHead()
@@ -12,75 +10,6 @@ MCFunction('update', () => {
     doBlockTests()
 }, {
     runEachTick: true
-})
-
-function doBlockTests() {
-    _.if(playerInPortalZ.score, () => {
-        _.if(playerInPortalBounds.score, () => {
-            onTestPointOnOppositeHalf()
-        }).else(() => {
-            onTestNever()
-        })
-    }).else(() => {
-        onTestPointIsInFrustum()
-    })
-}
-
-function onTestNever() {
-    testResultSuccess["="](false)
-    testPoints()
-}
-
-const testPointOnOppositeHalf = MCFunction('test_point_on_opposite_half', () => {
-    _.if(playerIsNorthCurrent.value, () => {
-        _.if(testPos.z[">"](portalCenterRaw[2]), () => {
-            testResultSuccess["="](true)
-        }).else(() => {
-            testResultSuccess["="](false)
-        })
-    }).else(() => {
-        _.if(testPos.z["<"](portalCenterRaw[2]), () => {
-            testResultSuccess["="](true)
-        }).else(() => {
-            testResultSuccess["="](false)
-        })
-    })
-})
-
-function onTestPointOnOppositeHalf() {
-    testPoints(() => testPointOnOppositeHalf())
-}
-
-const testPointIsInFrustum = MCFunction('test_point_is_in_frustum', () => {
-    testPos.w["="](1)
-    multiplyPoint(testPos, portalFrustumMatrix, testResultPos)
-
-    testResultPos.x["/="](testResultPos.w)
-    testResultPos.y["/="](testResultPos.w)
-
-    testResultSuccess["="](true)
-
-    const fail = () => testResultSuccess["="](false)
-
-    _.if(testResultPos.z["<"](0), fail) // behind frame
-    _.if(testResultPos.x["<"](-0.5), fail) // too far left
-    _.if(testResultPos.x[">"](0.5), fail) // too far right
-    _.if(testResultPos.y["<"](-0.5), fail) // too far up
-    _.if(testResultPos.y[">"](0.5), fail) // too far down
-})
-
-function onTestPointIsInFrustum() {
-    testPoints(() => testPointIsInFrustum())
-}
-
-const updatePlayerPortalSide = MCFunction('update_player_portal_side', () => {
-    checkPlayerPortalData()
-
-    _.if(playerIsNorthCurrent["!="](playerIsNorthLast), () => {
-        tellraw('@a', 'portal side crossed')
-    })
-
-    playerIsNorthLast["="](playerIsNorthCurrent)
 })
 
 const updatePortalFrustum = MCFunction('update_portal_frustum', () => {
@@ -122,38 +51,12 @@ const updatePlayerHead = MCFunction('update_player_head', () => {
     playerHead.y['+='](1.6)
 })
 
-const testObjective = Objective.create('frustum_test')
-const testPos = Vector4.fromObjective(testObjective, 'pos')
-const testResultPos = Vector4.fromObjective(testObjective, 'resultPos')
-const testResultSuccess = Boolean.from(testObjective('resultBoolean'))
+const updatePlayerPortalSide = MCFunction('update_player_portal_side', () => {
+    checkPlayerPortalData()
 
-function testPoints(test?: () => void) {
-    for (let x = -15; x <= 15; x++) {
-        for (let y = -10; y <= 10; y++) {
-            for (let z = 0; z <= 0; z++) {
-                testPoint(portalCenterRaw[0] + x, portalCenterRaw[1] + y, portalCenterRaw[2] + z + 3, test)
-            }
-        }
-    }
-}
-
-function testPoint(x: number, y: number, z: number, test?: () => void) {
-    x = Math.round(x) + 0.5
-    y = Math.round(y) + 0.5
-    z = Math.round(z) + 0.5
-
-    testPos.x["="](x)
-    testPos.y["="](y)
-    testPos.z["="](z)
-
-    if (test)
-        test()
-
-    const p = abs(Math.floor(x), Math.floor(y), Math.floor(z))
-
-    _.if(testResultSuccess.value, () => {
-        setblock(p, 'minecraft:netherrack')
-    }).else(() => {
-        setblock(p, 'minecraft:air')
+    _.if(playerIsNorthCurrent["!="](playerIsNorthLast), () => {
+        tellraw('@a', 'portal side crossed')
     })
-}
+
+    playerIsNorthLast["="](playerIsNorthCurrent)
+})

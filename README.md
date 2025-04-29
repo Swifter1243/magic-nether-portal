@@ -10,15 +10,6 @@ Portal is at `0,0,0`
 
 # Building Yourself
 
-To build the datapack, run:
-```ts
-npm run build
-// or
-yarn build
-// or
-sand build
-```
-
 > [!CAUTION]  
 > Sandstone is currently broken on 1.21+ because of the datapack namespace changes (e.g. `functions` -> `function`) so you'll need to backport the world if you want to build this yourself.
 
@@ -26,4 +17,14 @@ sand build
 > Create an `outputpath.ts` file in the root project which exports the path to the desired datapack output.
 ```
 export const path = 'F:/Games/.minecraft/saves/magic nether portal/datapacks'
+```
+
+
+To build the datapack, run:
+```ts
+npm run build
+// or
+yarn build
+// or
+sand build
 ```

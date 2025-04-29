@@ -1,4 +1,4 @@
-import { Score } from "sandstone"
+import { _, Score } from "sandstone"
 import { getNextVariable } from "./variable"
 
 export class Boolean {
@@ -26,6 +26,17 @@ export class Boolean {
         else {
             this.score.set(value ? 1 : 0)
         }
+    }
+
+    '!' = this.not
+    not() {
+        const result = Boolean.from(getNextVariable())
+        _.if(this.value, () => {
+            result["="](false)
+        }).else(() => {
+            result['='](true)
+        })
+        return result
     }
 
     '==' = this.isEqual

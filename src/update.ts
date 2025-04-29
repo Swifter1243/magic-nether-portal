@@ -1,7 +1,7 @@
 import { _, Data, MCFunction, tellraw } from "sandstone"
 import { doBlockTests } from "./test"
 import { FixedPointNumber } from "./number"
-import { checkPlayerPortalData, playerHead, playerIsNorthCurrent, playerIsNorthLast, portalCenter, portalFrustumMatrix, portalSizeX, portalSizeY } from "./data"
+import { checkPlayerPortalData, playerHead, playerInNether, playerInPortalBounds, playerIsNorthCurrent, playerIsNorthLast, portalCenter, portalFrustumMatrix, portalSizeX, portalSizeY } from "./data"
 
 MCFunction('update', () => {
     updatePlayerHead()
@@ -54,9 +54,17 @@ const updatePlayerHead = MCFunction('update_player_head', () => {
 const updatePlayerPortalSide = MCFunction('update_player_portal_side', () => {
     checkPlayerPortalData()
 
-    _.if(playerIsNorthCurrent["!="](playerIsNorthLast), () => {
-        tellraw('@a', 'portal side crossed')
+    _.if(_.and(
+        playerIsNorthCurrent["!="](playerIsNorthLast),
+        playerInPortalBounds.value
+    ), () => {
+        onPortalTraveled()
     })
 
     playerIsNorthLast["="](playerIsNorthCurrent)
+})
+
+const onPortalTraveled = MCFunction('on_portal_traveled', () => {
+    playerInNether["="](playerInNether["!"]())
+    tellraw('@a', 'portal traveled')
 })

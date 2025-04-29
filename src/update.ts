@@ -1,5 +1,5 @@
 import { _, abs, data, Data, execute, kill, MCFunction, Objective, particle, rel, scoreboard, Selector, setblock, summon, tellraw, title } from "sandstone";
-import { playerHead, portalCenter, portalCenterRaw, portalFrustumMatrix, portalSizeX, portalSizeY } from "./data";
+import { checkPlayerIsNorth, playerHead, playerIsNorthCurrent, playerIsNorthLast, portalCenter, portalCenterRaw, portalFrustumMatrix, portalSizeX, portalSizeY } from "./data";
 import { Vector4 } from "./vector";
 import { Matrix4x4, multiplyPoint } from "./matrix";
 import { Boolean } from "./boolean";
@@ -8,6 +8,7 @@ import { FixedPointNumber } from "./number";
 MCFunction('update', () => {
     updatePlayerHead()
     updatePortalFrustum()
+    updatePlayerPortalSide()
 
     for (let x = -15; x <= 15; x++) {
         for (let y = -10; y <= 10; y++) {
@@ -18,6 +19,16 @@ MCFunction('update', () => {
     }
 }, {
     runEachTick: true
+})
+
+const updatePlayerPortalSide = MCFunction('update_player_portal_side', () => {
+    checkPlayerIsNorth()
+
+    _.if(playerIsNorthCurrent["!="](playerIsNorthLast), () => {
+        tellraw('@a', 'portal side crossed')
+    })
+
+    playerIsNorthLast["="](playerIsNorthCurrent)
 })
 
 const updatePortalFrustum = MCFunction('update_portal_frustum', () => {

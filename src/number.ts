@@ -120,12 +120,20 @@ export class FixedPointNumber {
     }
 
     '<' = this.lessThan
-    lessThan(other: number): ConditionType {
-        return this.score.lessThan(other * SCALE)
+    lessThan(other: FixedPointNumber | number): ConditionType {
+        if (typeof other === 'number') {
+            return this.score.lessThan(other * SCALE)
+        } else {
+            return this.score.lessThan(other.score)
+        }
     }
 
     '>' = this.greaterThan
-    greaterThan(other: number): ConditionType {
-        return this.score.greaterThan(other * SCALE)
+    greaterThan(other: FixedPointNumber | number): ConditionType {
+        if (typeof other === 'number') {
+            return this.score.greaterThan(other * SCALE)
+        } else {
+            return this.score.greaterThan(other.score)
+        }
     }
 }

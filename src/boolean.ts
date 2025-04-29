@@ -19,8 +19,23 @@ export class Boolean {
     }
     
     '=' = this.set
-    set(value: boolean) {
-        this.score.set(value ? 1 : 0)
+    set(value: Boolean | boolean) {
+        if (value instanceof Boolean) {
+            this.score.set(value.score)
+        }
+        else {
+            this.score.set(value ? 1 : 0)
+        }
+    }
+
+    '==' = this.isEqual
+    isEqual(value: Boolean) {
+        return this.score["=="](value.score)
+    }
+
+    '!=' = this.isNotEqual
+    isNotEqual(value: Boolean) {
+        return this.score["!="](value.score)
     }
 
     get value() {

@@ -23,9 +23,7 @@ export const path = 'F:/Games/.minecraft/saves/magic nether portal/datapacks'
 
 To build the datapack, run:
 ```ts
-npm run build
-// or
-yarn build
+pnpm build
 // or
 sand build
 ```

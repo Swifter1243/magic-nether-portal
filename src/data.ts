@@ -1,4 +1,4 @@
-import { _, data, MCFunction, Objective } from 'sandstone'
+import { _, data, MCFunction, Objective, tellraw } from 'sandstone'
 import { Vector4 } from './vector'
 import { FixedPointNumber } from './number'
 import { Matrix4x4 } from './matrix'
@@ -26,8 +26,31 @@ export const portalFrustumMatrix = Matrix4x4.fromObjective(dataObjective, 'porta
 export const playerInNether = Boolean.from(dataObjective('player_in_nether'))
 export const playerIsNorthLast = Boolean.from(dataObjective('player_is_north_last'))
 export const playerIsNorthCurrent = Boolean.from(dataObjective('player_is_north_current'))
+export const playerInPortalBounds = Boolean.from(dataObjective('player_in_portal_bounds'))
+export const playerInPortalZ = Boolean.from(dataObjective('player_in_portal_z'))
 
-export const checkPlayerIsNorth = MCFunction('calculate_player_is_north', () => {
+export const checkPlayerPortalData = MCFunction('check_player_portal_data', () => {
+    _.if(_.and(
+        playerHead.z.greaterThan(portalCenterRaw[2] - 0.5),
+        playerHead.z.lessThan(portalCenterRaw[2] + 0.5)
+    ), () => {
+        playerInPortalZ['='](true)
+    }).else(() => {
+        playerInPortalZ['='](false)
+    })
+
+    _.if(_.and(
+        playerInPortalZ.score,
+        playerHead.x.greaterThan(portalCenterRaw[0] - portalSizeRaw[0] * 0.5),
+        playerHead.x.lessThan(portalCenterRaw[0] + portalSizeRaw[0] * 0.5),
+        playerHead.y.greaterThan(portalCenterRaw[1] - portalSizeRaw[1] * 0.5),
+        playerHead.y.lessThan(portalCenterRaw[1] + portalSizeRaw[1] * 0.5)
+    ), () => {
+        playerInPortalBounds['='](true)
+    }).else(() => {
+        playerInPortalBounds['='](false)
+    })
+
     _.if(playerHead.z.lessThan(portalCenter.z), () => {
         playerIsNorthCurrent['='](true)
     }).else(() => {
@@ -55,7 +78,7 @@ MCFunction('init_portal_data', () => {
 
     playerInNether['='](false)
 
-    checkPlayerIsNorth()
+    checkPlayerPortalData()
     playerIsNorthLast['='](playerIsNorthCurrent)
 }, {
     runOnLoad: true
